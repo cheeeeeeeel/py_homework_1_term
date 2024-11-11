@@ -10,3 +10,7 @@ pytest ./2_sentence_is_pangram/test.py
 
 def is_sentence_is_pangram(sentence: str) -> bool:
     """Пишите ваш код здесь."""
+    sentence = set(sentence.lower())
+    alphanet = {chr(i) for i in range(97, 123)}
+    return sentence == alphanet
+
