@@ -16,14 +16,12 @@ def retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exception
 
         def wrapper(*args, **kwargs):
 
-            nonlocal count
-            while count > 0:
+            for cnt in range(count):
                 try:
                     result = func(*args, **kwargs)
                     return result
                 except handled_exceptions:
-                    count -= 1
-                    if count == 0:
+                    if cnt == count - 1:
                         raise
                     end_sleep = datetime.now() + delay
                     while datetime.now() <= end_sleep:
