@@ -1,6 +1,7 @@
 # реализуйте декоратор вида @retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exceptions)])
 
 from datetime import datetime, timedelta
+from typing import Callable
 
 def retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exception)] = (Exception,)):
     """
@@ -12,7 +13,7 @@ def retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exception
     if count < 1:
         raise ValueError(f"Число попыток не должно быть меньше 1, сейчас {count}")
 
-    def decorator(func: callable):
+    def decorator(func: Callable):
 
         def wrapper(*args, **kwargs):
 
