@@ -11,67 +11,78 @@ class Statsd(ABC):
         self.buffer_limit = buffer_limit
         self.buffer = []
 
-    @abstractmethod
-    def _metric(self, metric: str, value: int):
-        pass
-
-    def incr(self, metric_name: str):
-        self._metric(metric_name, 1)
-
-    def decr(self, metric_name: str):
-        self._metric(metric_name, -1)
-
     def __enter__(self):
         return self
 
     def __exit__(self, *args):
         self._writing_to_file()
 
+    def incr(self, metric_name: str) -> None:
+        """Прирост метрики"""
+        self._metric_writing(metric_name, 1)
+
+    def decr(self, metric_name: str)  -> None:
+        """Уменьшение метрики"""
+        self._metric_writing(metric_name, -1)
+
     @abstractmethod
-    def _writing_to_file(self):
-        pass
+    def _metric_writing(self, metric: str, value: int) -> None:
+        """Записывает данные в буфер. При полном заполнении буфера сохраняет данные в файл"""
+
+    @abstractmethod
+    def _writing_to_file(self) -> None:
+        """Запись данных из буфера в файл"""
+
+    @staticmethod
+    def date_utc_now() -> str:
+        """Дата и время прямо сейчас в UTC тайм зоне"""
+        return datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
 
 
 class TxtFile(Statsd):
 
     def __init__(self, path: str, buffer_limit: int):
         super().__init__(path, buffer_limit)
-        with open(path, "w", newline="") as _:
-            pass
+        self.create_file(path)
 
-    def _metric(self, metric: str, value: int):
-        date = datetime.now(tz=timezone.utc)
-        date = date.strftime("%Y-%m-%dT%H:%M:%S%z")
-        self.buffer.append(f"{date} {metric} {value}\n")
+    def _metric_writing(self, metric: str, value: int) -> None:
+        self.buffer.append(f"{self.date_utc_now()} {metric} {value}\n")
         if len(self.buffer) == self.buffer_limit:
             self._writing_to_file()
 
-    def _writing_to_file(self):
+    def _writing_to_file(self) -> None:
         with open(self.path, "a", newline="") as file:
             file.writelines(self.buffer)
         self.buffer = []
+
+    @staticmethod
+    def create_file(file_path):
+        with open(file_path, "w", newline="") as _:
+            pass
 
 
 class CsvFile(Statsd):
 
     def __init__(self, path: str, buffer_limit: int):
         super().__init__(path, buffer_limit)
-        with open(path, "w", newline="") as file:
-            writer = csv.writer(file, delimiter=";", lineterminator="\n")
-            writer.writerow(["date", "metric", "value"])
+        self.create_file_with_header(path)
 
-    def _metric(self, metric: str, value: int):
-        date = datetime.now(tz=timezone.utc)
-        date = date.strftime("%Y-%m-%dT%H:%M:%S%z")
-        self.buffer.append([date, metric, value])
+    def _metric_writing(self, metric: str, value: int) -> None:
+        self.buffer.append([self.date_utc_now(), metric, value])
         if len(self.buffer) == self.buffer_limit:
             self._writing_to_file()
 
-    def _writing_to_file(self):
+    def _writing_to_file(self) -> None:
         with open(self.path, "a", newline="") as csvfile:
             writer = csv.writer(csvfile, delimiter=";", lineterminator="\n")
             writer.writerows(self.buffer)
         self.buffer = []
+
+    @staticmethod
+    def create_file_with_header(file_path):
+        with open(file_path, "w", newline="") as file:
+            writer = csv.writer(file, delimiter=";", lineterminator="\n")
+            writer.writerow(["date", "metric", "value"])
 
 
 def get_txt_statsd(path: str, buffer_limit: int = 10) -> Statsd:
