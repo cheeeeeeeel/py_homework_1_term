@@ -5,19 +5,15 @@ from datetime import datetime, timezone
 
 
 class TypeFile(Protocol):
+    def writing_to_file(self, data: list[list[str]]) -> None:
+        """Записывает data (данные хранящиеся в буфере) в файл"""
+
+
+class TxtFile:
 
     def __init__(self, path: str):
         self.path = path
         self._create_file()
-
-    def writing_to_file(self, data: list[list[str]]) -> None:
-        """Записывает data (данные хранящиеся в буфере) в файл"""
-
-    def _create_file(self) -> None:
-        """Создаёт файл"""
-
-
-class TxtFile(TypeFile):
 
     def writing_to_file(self, data: list[list[str]]) -> None:
         with open(self.path, "a", newline="") as file:
@@ -30,7 +26,11 @@ class TxtFile(TypeFile):
             pass
 
 
-class CsvFile(TypeFile):
+class CsvFile:
+
+    def __init__(self, path: str):
+        self.path = path
+        self._create_file()
 
     def writing_to_file(self, data: list[list[str]]) -> None:
         with open(self.path, "a", newline="") as csvfile:
@@ -59,7 +59,7 @@ class Statsd:
     def _metric_writing(self, metric: str, value: int) -> None:
         """Записывает метрики в буфер. При полном заполнении буфера эвакуирует данные в хранилище"""
         self.buffer.append([date_utc_now(), metric, value])
-        if len(self.buffer) == self.buffer_limit:
+        if len(self.buffer) >= self.buffer_limit:
             self._from_buffer_to_file()
 
     def _from_buffer_to_file(self) -> None:
