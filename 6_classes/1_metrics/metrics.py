@@ -32,7 +32,7 @@ class TxtFile:
         self.buffer = []
 
     @staticmethod
-    def create_file(file_path):
+    def create_file(file_path: str) -> None:
         with open(file_path, "w", newline="") as _:
             pass
 
@@ -57,7 +57,7 @@ class CsvFile:
         self.buffer = []
 
     @staticmethod
-    def create_file_with_header(file_path):
+    def create_file_with_header(file_path: str) -> None:
         with open(file_path, "w", newline="") as file:
             writer = csv.writer(file, delimiter=";", lineterminator="\n")
             writer.writerow(["date", "metric", "value"])
