@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 
 
 class TypeFile(Protocol):
-    def writing_to_file(self, data: list[list[str]]) -> None:
+
+    def writing_to_file(self, data: list[list[str | int]]) -> None:
         """Записывает data (данные хранящиеся в буфере) в файл"""
 
 
@@ -15,7 +16,7 @@ class TxtFile:
         self.path = path
         self._create_file()
 
-    def writing_to_file(self, data: list[list[str]]) -> None:
+    def writing_to_file(self, data: list[list[str | int]]) -> None:
         with open(self.path, "a", newline="") as file:
             for date_metric_value in data:
                 date, metric, value = date_metric_value
@@ -32,7 +33,7 @@ class CsvFile:
         self.path = path
         self._create_file()
 
-    def writing_to_file(self, data: list[list[str]]) -> None:
+    def writing_to_file(self, data: list[list[str | int]]) -> None:
         with open(self.path, "a", newline="") as csvfile:
             writer = csv.writer(csvfile, delimiter=";", lineterminator="\n")
             writer.writerows(data)
