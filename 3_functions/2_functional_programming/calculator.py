@@ -5,20 +5,17 @@ def plus(num1: int = None, num2: int = None) -> int:
         return num1 + num2
     return num1, plus
 
-
 def minus(num1: int = None, num2: int = None) -> int:
     """Оператор вычитания."""
     if not_none(num1, num2):
         return num1 - num2
     return num1, minus
 
-
 def times(num1: int = None, num2: int = None) -> int:
     """Оператор умножения."""
     if not_none(num1, num2):
         return num1 * num2
     return num1, times
-
 
 def divided_by(num1: int = None, num2: int = None) -> int:
     """Оператор целочисленного деления."""
@@ -27,6 +24,9 @@ def divided_by(num1: int = None, num2: int = None) -> int:
     elif not_none(num1, num2):
         return num1 // num2
     return num1, divided_by
+
+def not_none(*args: int | None) -> bool:
+    return all(arg is not None for arg in args)
 
 
 def number(a: int) -> callable:
@@ -38,11 +38,9 @@ def number(a: int) -> callable:
         if args:
             b, operator = args
             return operator(a, b)
-        else:
-            return a
+        return a
 
     return inner
-
 
 zero = number(0)
 one = number(1)
@@ -54,9 +52,3 @@ six = number(6)
 seven = number(7)
 eight = number(8)
 nine = number(9)
-print(type(nine))
-print(callable(nine))
-
-
-def not_none(*args: int | None) -> bool:
-    return all(arg is not None for arg in args)

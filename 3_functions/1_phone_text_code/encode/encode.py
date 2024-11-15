@@ -1,26 +1,32 @@
+
 def encode_text(text: str) -> str | None:
-    """Пишите ваш код здесь."""
-    # Создание словаря {символ: код}
-    punctuation_char = [" ", ".", ",", "?", "!", ":", ";"]
-    ru_alphabet = [chr(i) for i in range(1072, 1104)]
-    key_list = punctuation_char + ru_alphabet
-    value_list = ["0"]
-
-    for code in range(1, 10):
-        if code == 1:
-            for i in range(1, 7):
-                value_list.append(str(code) * i)
-        else:
-            for i in range(1, 5):
-                value_list.append(str(code) * i)
-
-    charset = {char: code for char, code in zip(key_list, value_list)}
-
-    # Кодирование
+    """Функция, преобразующая текст в код."""
+    encode_dict = create_encode_dict()
     result = []
     try:
         for symbol in text:
-            result.append(charset[symbol])
+            result.append(encode_dict[symbol])
         return " ".join(result)
     except KeyError:
         return None
+
+def create_encode_dict() -> dict[str, str]:
+    key_list = create_char_list()
+    value_list = create_code_list()
+    return {char: code for char, code in zip(key_list, value_list)}
+
+def create_code_list() -> list[str]:
+    list_ = ["0"]
+    for digit in range(1, 10):
+        if digit == 1:
+            for i in range(1, 7):
+                list_.append(str(digit) * i)
+        else:
+            for i in range(1, 5):
+                list_.append(str(digit) * i)
+    return list_
+
+def create_char_list() -> list[str]:
+    punctuation_char = [" ", ".", ",", "?", "!", ":", ";"]
+    ru_alphabet = [chr(i) for i in range(1072, 1104)]
+    return punctuation_char + ru_alphabet
