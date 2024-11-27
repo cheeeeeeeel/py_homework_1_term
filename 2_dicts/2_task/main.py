@@ -9,17 +9,12 @@ def top_10_most_common_words(text: str) -> dict[str, int]:
     Returns:
         словарь типа {слово: количество вхождений}
     """
-    most_common = {}
+
     words = re.findall(r"\w{3,}", text.lower())
 
-    for word in words:
-        if word in most_common:
-            most_common[word] += 1
-        else:
-            most_common[word] = 1
+    word_count = {}
+    for word in set(words):
+        word_count[word] = words.count(word)
 
-    most_common = sorted(most_common.items())
-    most_common = dict(
-        sorted(most_common, key=lambda pair: -pair[1])[:10]
-    )
-    return most_common
+    most_common = sorted(word_count.items(), key=lambda pair: (-pair[1], pair[0]))[:10]
+    return dict(most_common)
