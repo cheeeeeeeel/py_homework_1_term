@@ -35,7 +35,7 @@ def not_none(*args: int | None) -> bool:
     return all(arg is not None for arg in args)
 
 
-def number(a: int) -> Callable[[tuple[int, Callable[[int, int], int]]], int]:
+def number(a: int) -> Callable[..., int]:
     """Для заданного числа 'a' реализуется внутренняя функция inner,
     в которой осуществляется арифметическая операция
     при условии, что оператор и правый операнд 'b' заданы."""
