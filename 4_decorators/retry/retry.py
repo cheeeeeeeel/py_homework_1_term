@@ -1,9 +1,9 @@
 # реализуйте декоратор вида @retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exceptions)])
-
-from datetime import datetime, timedelta
+import time
+from datetime import timedelta
 from typing import Callable
 
-def retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exception)] = (Exception,)):
+def retry(count: int, delay: timedelta, handled_exceptions: tuple[type[Exception],] = (Exception,)):
     """
     Декоратор позволяет повторно вызывать функцию:
         1. Заданное количество раз.
@@ -17,16 +17,14 @@ def retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exception
 
         def wrapper(*args, **kwargs):
 
-            for cnt in range(count):
+            for attempt in range(count):
                 try:
                     result = func(*args, **kwargs)
                     return result
-                except handled_exceptions:
-                    if cnt == count - 1:
-                        raise
-                    end_sleep = datetime.now() + delay
-                    while datetime.now() <= end_sleep:
-                        pass
+                except handled_exceptions as e:
+                    if attempt == count - 1:
+                        raise e
+                time.sleep(delay.total_seconds())
 
         return wrapper
 

@@ -15,7 +15,7 @@ def cycle(obj: Iterable[T]) -> Generator[T, None, None]:
 class Cycle:
     def __init__(self, obj: Iterable[T]):
         self.obj = tuple(obj)
-        self.len = len(obj)
+        self.len = len(self.obj)
         self.ind_obj = 0
 
     def __iter__(self):
@@ -26,6 +26,6 @@ class Cycle:
             res = self.obj[self.ind_obj]
             self.ind_obj += 1
             return res
-        elif self.ind_obj == self.len:
+        else:
             self.ind_obj = 1
             return self.obj[0]

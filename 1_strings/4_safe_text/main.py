@@ -29,5 +29,5 @@ def recover_article() -> str:
         sentence = sentence.replace('WOOF-WOOF', 'CAT')
         sentence = sentence.capitalize()
         sentences[i] = sentence
-    wrong_article = '.\n'.join(sentences)
-    return wrong_article
+    correct_article = '.\n'.join(sentences)
+    return correct_article
