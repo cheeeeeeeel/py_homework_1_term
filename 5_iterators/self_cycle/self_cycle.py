@@ -4,28 +4,21 @@ T = TypeVar("T")
 
 
 def cycle(obj: Iterable[T]) -> Generator[T, None, None]:
-    """
-    Функция создает бесконечный генератор благодаря зацикливанию одного объекта. \n
-    За последним элементом переданного объекта следует первый.
-    """
+    """Бесконечно повторяет элементы заданной последовательности."""
     while True:
         yield from obj
 
-
 class Cycle:
     def __init__(self, obj: Iterable[T]):
-        self.obj = tuple(obj)
-        self.len = len(self.obj)
-        self.ind_obj = 0
+        self._obj = obj
+        self._iter = iter(obj)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.ind_obj < self.len:
-            res = self.obj[self.ind_obj]
-            self.ind_obj += 1
-            return res
-        else:
-            self.ind_obj = 1
-            return self.obj[0]
+        try:
+            return next(self._iter)
+        except StopIteration:
+            self._iter = self._obj.__iter__()
+            return next(self._iter)
